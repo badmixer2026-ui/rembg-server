@@ -1,10 +1,10 @@
 from flask import Flask, request, Response
 from rembg import remove, new_session
 import base64
+import os
 
 app = Flask(__name__)
 
-# Pre-load model at startup
 print("Loading rembg model...")
 session = new_session()
 print("Model loaded!")
@@ -23,4 +23,5 @@ def removebg():
         return Response(str(e), status=500)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
