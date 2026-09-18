@@ -1,19 +1,26 @@
 from flask import Flask, request, Response
-from rembg import remove
+from rembg import remove, new_session
 import base64
 
 app = Flask(__name__)
+
+# Pre-load model at startup
+print("Loading rembg model...")
+session = new_session()
+print("Model loaded!")
 
 @app.route("/v1.0/removebg", methods=["POST"])
 def removebg():
     try:
         data = request.get_json()
+        if not data or "image_file_b64" not in data:
+            return Response("missing image", status=400)
         img = base64.b64decode(data["image_file_b64"])
-        result = remove(img)
+        result = remove(img, session=session)
         return Response(result, mimetype="image/png")
     except Exception as e:
-        print("Error:", e)
-        return Response(status=500)
+        print("Error:", str(e))
+        return Response(str(e), status=500)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
