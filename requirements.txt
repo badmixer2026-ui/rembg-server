@@ -1,5 +1,4 @@
 flask
-gunicorn
 rembg
 onnxruntime
 pillow
