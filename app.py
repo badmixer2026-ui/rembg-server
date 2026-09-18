@@ -5,9 +5,9 @@ import os
 
 app = Flask(__name__)
 
-print("Loading rembg model...")
-session = new_session()
-print("Model loaded!")
+print("Loading lightweight model...")
+session = new_session("u2netp")  # ← tiny model
+print("Model ready!")
 
 @app.route("/v1.0/removebg", methods=["POST"])
 def removebg():
