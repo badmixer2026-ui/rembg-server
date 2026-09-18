@@ -2,16 +2,29 @@ from flask import Flask, request, Response
 from rembg import remove, new_session
 import base64
 import os
+import threading
 
 app = Flask(__name__)
+session = None
 
-print("Loading lightweight model...")
-session = new_session("u2netp")  # ← tiny model
-print("Model ready!")
+def load_model():
+    global session
+    print("Loading model...")
+    session = new_session("u2netp")
+    print("Model ready!")
+
+# Load model in background AFTER Flask starts
+threading.Thread(target=load_model, daemon=True).start()
+
+@app.route("/")
+def home():
+    return "OK"
 
 @app.route("/v1.0/removebg", methods=["POST"])
 def removebg():
     try:
+        if session is None:
+            return Response("model loading", status=503)
         data = request.get_json()
         if not data or "image_file_b64" not in data:
             return Response("missing image", status=400)
